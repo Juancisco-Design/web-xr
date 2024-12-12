@@ -1,0 +1,443 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+<meta charset="UTF-8" /> 
+     <title>WEB-XR_FLORES ALBARRAN JUAN FRANCISCO</title>
+     <link rel="icon" type="image/png" href="./assets/favicon.png"/>
+     <style>
+     </style>
+</head>
+<body>
+<canvas id="myCanvas">
+    <!--El elemento HTML canvas se puede utilizar para dibujar gráficos a través de 
+        secuencias de comandos (por lo general JavaScript ).-->
+</canvas>
+<script type="importmap"> 
+    {
+        "imports":{
+            "three": "./js/three.module.js",
+            "three/VRButton": "./js/VRButton.js"
+        }
+    }
+</script>
+<script type="module"> 
+    //👉🏽 Mandar llamar a la librería
+    import * as THREE from "https://cdn.skypack.dev/three@0.129.0/build/three.module.js";
+    import { RoundedBoxGeometry } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/geometries/RoundedBoxGeometry.js";
+    import { VRButton } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/webxr/VRButton.js"
+
+    //IMPORTAR ELEMENTOS JS NAVIDAD
+    import piso from'./js/piso.js'
+    import regalo1 from'./js/regalo1.js'
+    import regalo2 from'./js/regalo2.js'
+    import regalo3 from'./js/regalo3.js'
+    import arbol from'./js/arbol.js'
+    import muñeco from'./js/muñeco.js'
+    import santa from'./js/santa.js'
+    import pinata from'./js/pinata.js'
+    import esfera3 from'./js/esfera3.js'
+    import caramelo from'./js/caramelo.js'
+    
+
+    //👉🏽 Renderer - Realiza una conexión entre el código y el canvas
+    var renderer = new THREE.WebGLRenderer({canvas: document.getElementById('myCanvas'),antialias: true});
+    renderer.setPixelRatio(window.decivePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x0959a0); //COLOR FONDO
+
+    renderer.xr.enabled = true;///////////////////////////////////////////////////////////// Añadir estas Dos lineas
+    renderer.xr.setReferenceSpaceType( 'local' );/////////////////////////////////////////// Para habilitar el VR
+
+    document.body.appendChild( renderer.domElement );///////////////////////////////////////// Añadir estas Dos lineas
+    document.body.appendChild( VRButton.createButton( renderer ) );/////////////////////////// Para habilitar el boton en el navegador
+
+    //🎬 Creando nueva escena 
+    var scene = new THREE.Scene();
+
+    //🎥 Agregar una cámara de perspectiva
+    var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 5000);
+    scene.add(camera);
+
+    // Evento para redimensionar el canvas
+
+    // Sizes: Objeto donde se toman los tamaños interiores 'inner' de la ventana.
+    const sizes = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+    };
+
+    // Tomando el 'canvas' mediante el id 'myCanvas' del HTML para cambiar sus dimensiones
+    const canvas = document.getElementById('myCanvas');
+
+    // Evento que se ejecutará al redimensionar 'resize' nuestra ventana
+    window.addEventListener('resize', () => {
+
+    // Actualizando los valores del objeto 'sizes' con las medidas internas de la ventana
+    sizes.width = window.innerWidth;
+    sizes.height = window.innerHeight;
+
+    // Actualización de los valores en la cámara como la relación-aspecto y la matriz de proyección.
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
+
+    // Aplicando al render el nuevo tamaño del 'viewport'
+    renderer.setSize(sizes.width, sizes.height);
+    });
+
+    //👉🏽Settings de la cámara
+    camera.position.set(0, 60, 25);
+
+    //👉🏽Añadiendo los OrbitControls
+    //var controls = new OrbitControls(camera, renderer.domElement);
+    //controls.enableDamping = true;
+    //controls.dampingFactor = 0.05;
+
+    /*/✏️GridHelper
+    const gridHelper = new THREE.GridHelper(50,10);
+    scene.add (gridHelper);
+
+    //✏️Ejes
+    const axesHelper = new THREE.AxesHelper(50);
+    scene.add (axesHelper);*/
+  
+
+    // 🪄🪄 SECCIÓN DE CÓDIGO 🪄🪄
+
+    var moverZ = -250;  // Desplazamiento en Z
+
+    //BACKGROUND
+    var loader = new THREE.TextureLoader();
+    var bgTexture = loader.load ('./assets/fondo1.jpg')
+    scene.background = bgTexture;
+
+    //LUZ 1
+    var luzAmbiental = new THREE.AmbientLight(0x505050, 0.3);
+    scene.add(luzAmbiental);
+
+    //LUZ 2
+    var luzRelleno = new THREE.AmbientLight(0x707070, 0.3);
+    scene.add(luzRelleno);
+
+    //LUZ 3
+    var light=new THREE.SpotLight(0xffffff, 0.45);
+    light.position.set(100,170,350 + moverZ);
+    light.target.position.set(10, 100, 0 + moverZ); 
+    scene.add(light);
+
+    //LUZ 4
+    var light=new THREE.SpotLight(0xffffff, 0.45);
+    light.position.set(-100,170,-350 + moverZ);
+    light.target.position.set(10, 100, 0 + moverZ ); 
+    scene.add(light);
+
+    // LUZ 5
+    var luzFrontal = new THREE.DirectionalLight(0xffffff, 0.45);
+    luzFrontal.position.set(0, 150, 100 + moverZ);
+    luzFrontal.target.position.set(10, 100, 0 + moverZ); 
+    scene.add(luzFrontal);
+    scene.add(luzFrontal.target);
+
+    // LUZ 6
+    var luzTrasera = new THREE.DirectionalLight(0xffffff, 0.45);
+    luzTrasera.position.set(0, 150, -100 + moverZ); 
+    luzTrasera.target.position.set(-10, 100, 0 + moverZ);
+    scene.add(luzTrasera); 
+    scene.add(luzTrasera.target);
+
+    //BASE 1
+    var geometria1 = new THREE.BoxGeometry(250,2,175);
+    var textura1 = new THREE.TextureLoader().load("./assets/base.jpg");
+    var material1 = new THREE.MeshLambertMaterial({ map: textura1 });
+    var maya1 = new THREE.Mesh(geometria1,material1);
+    scene.add(maya1);
+    maya1.position.set(0,-1.6,16.4 + moverZ);
+
+    //BASE 2
+    var geometria1 = new THREE.BoxGeometry(238,2,170);
+    var textura1 = new THREE.TextureLoader().load("./assets/arco.jpg");
+    var material1 = new THREE.MeshLambertMaterial({ map: textura1 });
+    var maya1 = new THREE.Mesh(geometria1,material1);
+    scene.add(maya1);
+    maya1.position.set(0,-1.5,14 + moverZ);
+
+    //BASE 2
+    var geometria1 = new THREE.BoxGeometry(60,2,120);
+    var textura1 = new THREE.TextureLoader().load("./assets/base.jpg");
+    var material1 = new THREE.MeshLambertMaterial({ map: textura1 });
+    var maya1 = new THREE.Mesh(geometria1,material1);
+    scene.add(maya1);
+    maya1.position.set(0,-1.4,39 + moverZ);
+
+    //ARCO 1
+    var arco1 = new THREE.CylinderGeometry(125, 125, 2, 50, 1, false, 1.57, Math.PI); 
+    var texturaArco1 = new THREE.TextureLoader().load("./assets/base.jpg");
+    var materialArco1 = new THREE.MeshLambertMaterial({ map: texturaArco1 });
+    var meshArco1 = new THREE.Mesh(arco1, materialArco1);
+    meshArco1.position.set(0, -2, -70 + moverZ);
+    meshArco1.rotation.x = THREE.MathUtils.degToRad(90);
+    scene.add(meshArco1);
+
+    // ARCO 2
+    var arco2 = new THREE.CylinderGeometry(119, 119, 2, 50, 1, false, 1.57, Math.PI); 
+    var texturaArco2 = new THREE.TextureLoader().load("./assets/arco.jpg");
+    var materialArco2 = new THREE.MeshLambertMaterial({ map: texturaArco2 });
+    var meshArco2 = new THREE.Mesh(arco2, materialArco2);
+    meshArco2.position.set(0, -2, -68 + moverZ);
+    meshArco2.rotation.x = THREE.MathUtils.degToRad(90);
+    scene.add(meshArco2);
+
+    // ARCO 3
+    var arco3 = new THREE.CylinderGeometry(111, 111, 2, 50, 1, false, 1.57, Math.PI); 
+    var texturaArco3 = new THREE.TextureLoader().load("./assets/base.jpg");
+    var materialArco3 = new THREE.MeshLambertMaterial({ map: texturaArco3 });
+    var meshArco3 = new THREE.Mesh(arco3, materialArco3);
+    meshArco3.position.set(0, -2, -66 + moverZ);
+    meshArco3.rotation.x = THREE.MathUtils.degToRad(90);
+    scene.add(meshArco3);
+
+    // ARCO 4
+    var arco4 = new THREE.CylinderGeometry(105, 105, 2, 50, 1, false, 1.57, Math.PI); 
+    var texturaArco4 = new THREE.TextureLoader().load("./assets/arco.jpg");
+    var materialArco4 = new THREE.MeshLambertMaterial({ map: texturaArco4 });
+    var meshArco4 = new THREE.Mesh(arco4, materialArco4);
+    meshArco4.position.set(0, -2, -64 + moverZ);
+    meshArco4.rotation.x = THREE.MathUtils.degToRad(90);
+    scene.add(meshArco4);
+
+    // ARCO 5
+    var arco5 = new THREE.CylinderGeometry(98, 98, 2, 50, 1, false, 1.57, Math.PI); 
+    var texturaArco5 = new THREE.TextureLoader().load("./assets/base.jpg");
+    var materialArco5 = new THREE.MeshLambertMaterial({ map: texturaArco5 });
+    var meshArco5 = new THREE.Mesh(arco5, materialArco5);
+    meshArco5.position.set(0, -2, -62 + moverZ);
+    meshArco5.rotation.x = THREE.MathUtils.degToRad(90);
+    scene.add(meshArco5);
+
+
+    //--- ELEMENTOS NAVIDEÑOS IMPORTADOS ---
+
+    // ** PISOS IMPORTADOS **
+
+    // PISO 1
+    var pisito=piso({x:0, y:0, z:0});
+    scene.add(pisito);
+    pisito.scale.set(1.3, 1, 1.3);
+    pisito.position.set(0, 1, 0 + moverZ);
+
+    // PISO 2
+    var piso2 = pisito.clone();
+    piso2.scale.set(1.1, 1, 1.1);
+    piso2.position.set(-45, 1, 15 + moverZ);
+    scene.add(piso2);
+
+    // PISO 3
+    var piso3 = pisito.clone();
+    piso3.scale.set(1.1, 1, 1.1);
+    piso3.position.set(45, 1, 15 + moverZ);
+    scene.add(piso3);
+
+
+    // ** REGALOS IMPORTADOS **
+        
+    //IZQUIERDA
+    //REGALO 1
+    var regalito1=regalo1({x:0, y:0, z:0});
+    scene.add(regalito1);
+    regalito1.scale.set(4, 4, 4);
+    regalito1.position.set(-100,-10.6,-45 + moverZ);
+
+    //REGALO 2
+    var regalito2=regalo2({x:0, y:0, z:0});
+    scene.add(regalito2);
+    regalito2.scale.set(3, 3, 3);
+    regalito2.position.set(-106,-8,-26 + moverZ);
+
+    //REGALO 3
+    var regalito3=regalo3({x:0, y:0, z:0});
+    scene.add(regalito3);
+    regalito3.scale.set(2, 2, 2);
+    regalito3.position.set(-92,-5.7,-28 + moverZ);
+
+    //DERECHA
+    //REGALO 1
+    var regalito1=regalo1({x:0, y:0, z:0});
+    scene.add(regalito1);
+    regalito1.scale.set(4, 4, 4);
+    regalito1.position.set(100,-10.6,-45 + moverZ);
+
+    //REGALO 2
+    var regalito2=regalo2({x:0, y:0, z:0});
+    scene.add(regalito2);
+    regalito2.scale.set(3, 3, 3);
+    regalito2.position.set(106,-8,-26 + moverZ);
+
+    //REGALO 3
+    var regalito3=regalo3({x:0, y:0, z:0});
+    scene.add(regalito3);
+    regalito3.scale.set(2, 2, 2);
+    regalito3.position.set(92,-5.7,-28 + moverZ);
+
+    //CENTRO
+    //REGALO 1
+    var regalito1=regalo2({x:0, y:0, z:0});
+    scene.add(regalito1);
+    regalito1.scale.set(3, 3, 3);
+    regalito1.position.set(0,-8, 48 + moverZ);
+
+    //REGALO 2
+    var regalito2=regalo1({x:0, y:0, z:0});
+    scene.add(regalito2);
+    regalito2.scale.set(2, 2, 2);
+    regalito2.position.set(-10,-5.7,61.3 + moverZ);
+
+    //REGALO 2
+    var regalito2=regalo1({x:0, y:0, z:0});
+    scene.add(regalito2);
+    regalito2.scale.set(2, 2, 2);
+    regalito2.position.set(10,-5.7,61.3 + moverZ);
+
+    //REGALO 3
+    var regalito3=regalo2({x:0, y:0, z:0});
+    scene.add(regalito3);
+    regalito3.scale.set(1.3, 1.3, 1.3);
+    regalito3.position.set(-16,-3.8,70 + moverZ);
+
+    //REGALO 3
+    var regalito3=regalo2({x:0, y:0, z:0});
+    scene.add(regalito3);
+    regalito3.scale.set(1.3, 1.3, 1.3);
+    regalito3.position.set(16,-3.8,70 + moverZ);
+
+    //REGALO 3
+    var regalito3=regalo3({x:0, y:0, z:0});
+    scene.add(regalito3);
+    regalito3.scale.set(1.5, 1.5, 1.5);
+    regalito3.position.set(0,-4.2,60 + moverZ);
+
+
+    // ** ARBOLES IMPORTADOS **
+
+    //ARBOL 1
+    var arbolito=arbol({x:0, y:0, z:0});
+    scene.add(arbolito);
+    arbolito.scale.set(1.8, 1.8, 1.8);
+    arbolito.position.set(0,43,0 + moverZ);
+
+    // ** MUEÑECO IMPORTADO **
+
+    var muñequito=muñeco({x:0, y:0, z:0});
+    scene.add(muñequito);
+    muñequito.scale.set(1.1, 1.1, 1.1);
+    muñequito.position.set(45,20,15 + moverZ);
+
+    // ** SANTA IMPORTADO **
+
+    var santita=santa({x:0, y:0, z:0});
+    scene.add(santita);
+    santita.scale.set(1.1, 1.1, 1.1);
+    santita.position.set(-45,20,15 + moverZ);
+
+    // ** PIÑATA IMPORTADA **
+
+    var pinatita1=pinata({x:0, y:0, z:0});
+    scene.add(pinatita1);
+    pinatita1.scale.set(2, 2, 2);
+    pinatita1.position.set(0,160,-10 + moverZ);
+
+    var pinatita2=pinata({x:0, y:0, z:0});
+    scene.add(pinatita2);
+    pinatita2.scale.set(1.5,1.5, 1.5);
+    pinatita2.position.set(-80,100,60 + moverZ);
+
+    var pinatita3=pinata({x:0, y:0, z:0});
+    scene.add(pinatita3);
+    pinatita3.scale.set(1.5,1.5, 1.5);
+    pinatita3.position.set(80,100,60 + moverZ);
+
+
+    // ** ESFERA IMPORTADA **
+
+    //IZQUIERDA
+    var esferita3=esfera3({x:0, y:0, z:0});
+    scene.add(esferita3);
+    esferita3.scale.set(1.3, 1.3, 1.3);
+    esferita3.position.set(-90,6,65 + moverZ);
+    esferita3.rotation.z = THREE.MathUtils.degToRad(-15);
+
+    var esferita3=esfera3({x:0, y:0, z:0});
+    scene.add(esferita3);
+    esferita3.scale.set(1, 1, 1);
+    esferita3.position.set(-95,4.3,76 + moverZ);
+    esferita3.rotation.z = THREE.MathUtils.degToRad(15);
+
+    //DERECHA
+    var esferita3=esfera3({x:0, y:0, z:0});
+    scene.add(esferita3);
+    esferita3.scale.set(1.3, 1.3, 1.3);
+    esferita3.position.set(90,6,65 + moverZ);
+    esferita3.rotation.z = THREE.MathUtils.degToRad(15);
+
+    var esferita3=esfera3({x:0, y:0, z:0});
+    scene.add(esferita3);
+    esferita3.scale.set(1, 1, 1);
+    esferita3.position.set(95,4.3,76 + moverZ);
+    esferita3.rotation.z = THREE.MathUtils.degToRad(-15);
+
+    // ** CARAMELO IMPORTADO **
+    //IZQUIERDA
+    var caramelito1=caramelo({x:0, y:0, z:0});
+    scene.add(caramelito1);
+    caramelito1.scale.set(1.5, 1.5, 1.5);
+    caramelito1.position.set(-50,7,80 + moverZ);
+
+    var caramelito2=caramelo({x:0, y:0, z:0});
+    scene.add(caramelito2);
+    caramelito2.scale.set(1, 1, 1);
+    caramelito2.position.set(-60,5,85 + moverZ);
+
+    var caramelito3=caramelo({x:0, y:0, z:0});
+    scene.add(caramelito3);
+    caramelito3.scale.set(1, 1, 1);
+    caramelito3.position.set(-40,5,85 + moverZ);
+
+    //DERECHA
+    var grupoCaramelitos = new THREE.Group();
+
+    var caramelito11 = caramelo({x: 0, y: 0, z: 0});
+    caramelito11.scale.set(1.5, 1.5, 1.5);
+    caramelito11.position.set(50, 7, 80 + moverZ);
+    grupoCaramelitos.add(caramelito11);
+
+    var caramelito22 = caramelo({x: 0, y: 0, z: 0});
+    caramelito22.scale.set(1, 1, 1);
+    caramelito22.position.set(60, 5, 85 + moverZ);
+    grupoCaramelitos.add(caramelito22);
+
+    var caramelito33 = caramelo({x: 0, y: 0, z: 0});
+    caramelito33.scale.set(1, 1, 1);
+    caramelito33.position.set(40, 5, 85 + moverZ);
+    grupoCaramelitos.add(caramelito33);
+
+    scene.add(grupoCaramelitos);
+
+    var grupoCaramelitosClone = grupoCaramelitos.clone();
+    grupoCaramelitosClone.position.set(-150, 0, -60 + moverZ);
+    scene.add(grupoCaramelitosClone);
+
+    var grupoCaramelitosClone2 = grupoCaramelitos.clone();
+    grupoCaramelitosClone2.position.set(50, 0, -60 + moverZ);
+    scene.add(grupoCaramelitosClone2);
+
+    
+
+        //🎰🎰Rendering y animación
+    function render ()
+    {
+        renderer.render(scene, camera);
+        requestAnimationFrame(render);
+                
+    }
+    renderer.setAnimationLoop( render );
+   </script>
+</body>
+</html>
